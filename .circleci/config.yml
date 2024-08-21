@@ -1,0 +1,26 @@
+version: 2.1
+
+orbs:
+  gcp-gcr: circleci/gcp-gcr@0.16.3
+
+workflows:
+  on-commit:
+    jobs:
+      - gcp-gcr/build-and-push-image:
+          context: google-container-writer
+          image: containers/legalos/terraform
+          gcloud-service-key: SERVICE_ACCOUNT_KEY
+          registry-url: europe-west3-docker.pkg.dev
+          tag: "h-<< pipeline.git.revision >>,b-<< pipeline.git.branch >>,n-<< pipeline.number >>"
+      - gcp-gcr/add-image-tag:
+          context: google-container-writer
+          image: containers/legalos/terraform
+          gcloud-service-key: SERVICE_ACCOUNT_KEY
+          registry-url: europe-west3-docker.pkg.dev
+          source-tag: "h-<< pipeline.git.revision >>"
+          target-tag: $(echo $CIRCLE_TAG)
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v[0-9]+\.[0-9]+\.[0-9]+(?:-[a-zA-Z0-9]+)*$/
