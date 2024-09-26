@@ -1,4 +1,4 @@
-FROM hashicorp/terraform:1.9.5 AS base
+FROM hashicorp/terraform:1.9.6 AS base
 
 RUN apk add --no-cache curl
 
